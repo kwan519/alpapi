@@ -1,0 +1,2 @@
+Command Generate Model from DB: 
+sequelize-auto -h localhost -d test -u graphql -x root --dialact mysql -c d:\Projects\alp-api\sequelize-auto-setting.json -o d:\Projects\alp-api\app\models
