@@ -7,7 +7,7 @@ module.exports = function(sequelize, DataTypes) {
       allowNull: false,
       primaryKey: true
     },
-    id_template_layout: {
+    template_layout_id: {
       type: DataTypes.INTEGER,
       allowNull: false,
       primaryKey: true,
@@ -16,13 +16,13 @@ module.exports = function(sequelize, DataTypes) {
         key: 'id_template'
       }
     },
-    id_site: {
+    site_id: {
       type: DataTypes.INTEGER,
       allowNull: false,
       primaryKey: true,
       references: {
         model: 'templates_layout',
-        key: 'sites_id_site'
+        key: 'sites_id'
       }
     },
     page_type: {
@@ -85,16 +85,16 @@ module.exports = function(sequelize, DataTypes) {
         using: "BTREE",
         fields: [
           { name: "id_page_types" },
-          { name: "id_template_layout" },
-          { name: "id_site" },
+          { name: "template_layout_id" },
+          { name: "site_id" },
         ]
       },
       {
         name: "fk_page_types_templates_layout1",
         using: "BTREE",
         fields: [
-          { name: "id_template_layout" },
-          { name: "id_site" },
+          { name: "template_layout_id" },
+          { name: "site_id" },
         ]
       },
     ]

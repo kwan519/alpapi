@@ -37,7 +37,7 @@ module.exports = function(sequelize, DataTypes) {
       allowNull: true,
       defaultValue: Sequelize.Sequelize.literal('CURRENT_TIMESTAMP')
     },
-    id_theme: {
+    theme_id: {
       type: DataTypes.INTEGER,
       allowNull: false,
       primaryKey: true,
@@ -46,13 +46,13 @@ module.exports = function(sequelize, DataTypes) {
         key: 'id_theme'
       }
     },
-    id_site: {
+    site_id: {
       type: DataTypes.INTEGER,
       allowNull: false,
       primaryKey: true,
       references: {
         model: 'theme',
-        key: 'sites_id_site'
+        key: 'sites_id'
       }
     }
   }, {
@@ -66,16 +66,16 @@ module.exports = function(sequelize, DataTypes) {
         using: "BTREE",
         fields: [
           { name: "id_block_components" },
-          { name: "id_theme" },
-          { name: "id_site" },
+          { name: "theme_id" },
+          { name: "site_id" },
         ]
       },
       {
         name: "fk_block_components_theme1",
         using: "BTREE",
         fields: [
-          { name: "id_theme" },
-          { name: "id_site" },
+          { name: "theme_id" },
+          { name: "site_id" },
         ]
       },
     ]

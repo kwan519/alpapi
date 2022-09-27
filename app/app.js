@@ -35,17 +35,17 @@ app.listen({ port: 5000 }, () =>
   console.log(`🚀 Server ready at http://localhost:5000`)
 );
 
-app.get("/", (req, res) => res.send("Hello World!"));
+app.get("/", (req, res) => res.send("This api for Alp"));
 
-app.get("/test", (req, res) => {
-  try {
-    tickets(3).then( value => {
-      res.send(JSON.stringify({id: 1, message: "300", data: value.dataValues}))
-    })
-  } catch (error) {
-     res.send({code: 500, message:"Can't get data from Database "})
-  } 
-});
+// app.get("/test", (req, res) => {
+//   try {
+//     tickets(3).then( value => {
+//       res.send(JSON.stringify({id: 1, message: "300", data: value.dataValues}))
+//     })
+//   } catch (error) {
+//      res.send({code: 500, message:"Can't get data from Database "})
+//   } 
+// });
 
 app.post("/login", (req, res) => {
   let jwtSecretKey = process.env.JWT_SECRET_KEY;

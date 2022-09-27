@@ -7,7 +7,7 @@ module.exports = function(sequelize, DataTypes) {
       allowNull: false,
       primaryKey: true
     },
-    sites_id_site: {
+    sites_id: {
       type: DataTypes.INTEGER,
       allowNull: false,
       primaryKey: true,
@@ -16,7 +16,7 @@ module.exports = function(sequelize, DataTypes) {
         key: 'id_site'
       }
     },
-    users_id_user: {
+    users_id: {
       type: DataTypes.INTEGER,
       allowNull: false,
       primaryKey: true,
@@ -45,22 +45,22 @@ module.exports = function(sequelize, DataTypes) {
         using: "BTREE",
         fields: [
           { name: "id_access_sites" },
-          { name: "sites_id_site" },
-          { name: "users_id_user" },
+          { name: "sites_id" },
+          { name: "users_id" },
         ]
       },
       {
         name: "fk_permission_users_sites",
         using: "BTREE",
         fields: [
-          { name: "sites_id_site" },
+          { name: "sites_id" },
         ]
       },
       {
         name: "fk_permission_users_users1",
         using: "BTREE",
         fields: [
-          { name: "users_id_user" },
+          { name: "users_id" },
         ]
       },
     ]

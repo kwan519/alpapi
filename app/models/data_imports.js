@@ -7,6 +7,24 @@ module.exports = function(sequelize, DataTypes) {
       allowNull: false,
       primaryKey: true
     },
+    sites_id: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      primaryKey: true,
+      references: {
+        model: 'sites',
+        key: 'id_site'
+      }
+    },
+    ms_language_id: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      primaryKey: true,
+      references: {
+        model: 'ms_language',
+        key: 'id_ms_language'
+      }
+    },
     url: {
       type: DataTypes.STRING(45),
       allowNull: true,
@@ -26,24 +44,6 @@ module.exports = function(sequelize, DataTypes) {
       allowNull: true,
       defaultValue: Sequelize.Sequelize.literal('CURRENT_TIMESTAMP')
     },
-    sites_id_site: {
-      type: DataTypes.INTEGER,
-      allowNull: false,
-      primaryKey: true,
-      references: {
-        model: 'sites',
-        key: 'id_site'
-      }
-    },
-    ms_language_id_ms_language: {
-      type: DataTypes.INTEGER,
-      allowNull: false,
-      primaryKey: true,
-      references: {
-        model: 'ms_language',
-        key: 'id_ms_language'
-      }
-    },
     page_types: {
       type: DataTypes.ENUM('landing','article','formfill'),
       allowNull: true
@@ -59,8 +59,8 @@ module.exports = function(sequelize, DataTypes) {
         using: "BTREE",
         fields: [
           { name: "id_data_imports" },
-          { name: "sites_id_site" },
-          { name: "ms_language_id_ms_language" },
+          { name: "sites_id" },
+          { name: "ms_language_id" },
         ]
       },
       {
@@ -75,14 +75,14 @@ module.exports = function(sequelize, DataTypes) {
         name: "fk_data_imports_sites1",
         using: "BTREE",
         fields: [
-          { name: "sites_id_site" },
+          { name: "sites_id" },
         ]
       },
       {
         name: "fk_data_imports_ms_language1",
         using: "BTREE",
         fields: [
-          { name: "ms_language_id_ms_language" },
+          { name: "ms_language_id" },
         ]
       },
     ]

@@ -1,7 +1,7 @@
 const Sequelize = require('sequelize');
 module.exports = function(sequelize, DataTypes) {
-  return sequelize.define('theme', {
-    id_theme: {
+  return sequelize.define('crm_call365', {
+    id: {
       autoIncrement: true,
       type: DataTypes.INTEGER,
       allowNull: false,
@@ -16,41 +16,54 @@ module.exports = function(sequelize, DataTypes) {
         key: 'id_site'
       }
     },
-    external_css: {
-      type: DataTypes.STRING(45),
-      allowNull: true,
-      comment: "stored path"
+    url: {
+      type: DataTypes.STRING(255),
+      allowNull: false
     },
-    external_js: {
-      type: DataTypes.STRING(45),
-      allowNull: true,
-      comment: "storage path\/link"
-    },
-    internal_css: {
+    formData: {
       type: DataTypes.TEXT,
-      allowNull: true
+      allowNull: false
     },
-    internal_js: {
+    sendData: {
       type: DataTypes.TEXT,
-      allowNull: true
+      allowNull: false
     },
-    image_url_root_directory: {
-      type: DataTypes.STRING(45),
-      allowNull: true
+    error: {
+      type: DataTypes.STRING(255),
+      allowNull: false
+    },
+    responseCode: {
+      type: DataTypes.INTEGER,
+      allowNull: false
+    },
+    status: {
+      type: DataTypes.STRING(255),
+      allowNull: false
     },
     createdate: {
       type: DataTypes.DATE,
-      allowNull: true,
+      allowNull: false,
       defaultValue: Sequelize.Sequelize.literal('CURRENT_TIMESTAMP')
     },
-    updatedate: {
-      type: DataTypes.DATE,
-      allowNull: true,
-      defaultValue: Sequelize.Sequelize.literal('CURRENT_TIMESTAMP')
+    responseData: {
+      type: DataTypes.TEXT,
+      allowNull: false
+    },
+    status_email: {
+      type: DataTypes.STRING(500),
+      allowNull: false
+    },
+    html_content: {
+      type: DataTypes.TEXT,
+      allowNull: false
+    },
+    location: {
+      type: DataTypes.TEXT,
+      allowNull: false
     }
   }, {
     sequelize,
-    tableName: 'theme',
+    tableName: 'crm_call365',
     timestamps: false,
     indexes: [
       {
@@ -58,12 +71,12 @@ module.exports = function(sequelize, DataTypes) {
         unique: true,
         using: "BTREE",
         fields: [
-          { name: "id_theme" },
+          { name: "id" },
           { name: "sites_id" },
         ]
       },
       {
-        name: "fk_theme_sites1",
+        name: "fk_crm_call365_sites1",
         using: "BTREE",
         fields: [
           { name: "sites_id" },
