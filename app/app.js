@@ -1,41 +1,40 @@
-import "@babel/polyfill";
-import express from "express";
-import tickets from "./sql/tickets";
-import jwt from "jsonwebtoken";
-import dotenv from "dotenv";
+import '@babel/polyfill'
+import express from 'express'
+import jwt from 'jsonwebtoken'
+import dotenv from 'dotenv'
 
-const bodyParser = require("body-parser");
-const { ApolloServer } = require("apollo-server-express");
-const cors = require("cors");
+const bodyParser = require('body-parser')
+const { ApolloServer } = require('apollo-server-express')
+const cors = require('cors')
 
-const app = express();
+const app = express()
 
 // Set up Global configuration access
-dotenv.config();
+dotenv.config()
 
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: true }));
-app.use(cors());
+app.use(bodyParser.json())
+app.use(bodyParser.urlencoded({ extended: true }))
+app.use(cors())
 
-async function startServer() {
+async function startServer () {
   const server = new ApolloServer({
     modules: [
-      require("./graphqL/tickets"), 
-      require("./graphqL/users")
-    ],
-  });
-  await server.start();
+      require('./graphqL/tickets'),
+      require('./graphqL/users')
+    ]
+  })
+  await server.start()
 
-  server.applyMiddleware({ app });
+  server.applyMiddleware({ app })
 }
 
-startServer();
+startServer()
 
 app.listen({ port: 5000 }, () =>
-  console.log(`🚀 Server ready at http://localhost:5000`)
-);
+  console.log('🚀 Server ready at http://localhost:5000')
+)
 
-app.get("/", (req, res) => res.send("This api for Alp"));
+app.get('/', (req, res) => res.send('This api for Alp'))
 
 // app.get("/test", (req, res) => {
 //   try {
@@ -44,17 +43,17 @@ app.get("/", (req, res) => res.send("This api for Alp"));
 //     })
 //   } catch (error) {
 //      res.send({code: 500, message:"Can't get data from Database "})
-//   } 
+//   }
 // });
 
-app.post("/login", (req, res) => {
-  let jwtSecretKey = process.env.JWT_SECRET_KEY;
-  
-  let data = {  
+app.post('/login', (req, res) => {
+  const jwtSecretKey = process.env.JWT_SECRET_KEY
+
+  const data = {
     time: Date(),
     userId: 12
   }
 
-  const token = jwt.sign(data,jwtSecretKey);
+  const token = jwt.sign(data, jwtSecretKey)
   res.send(token)
 })

@@ -1,5 +1,5 @@
-import { gql } from "apollo-server-express";
-import db from "../database";
+import { gql } from 'apollo-server-express'
+import db from '../database'
 
 export const typeDefs = gql`
 extend type Query {
@@ -15,14 +15,14 @@ type Ticket {
     user: User
     assigned_to_user_id: Int
 }
-`;
+`
 
 export const resolvers = {
-    Query: {
-        tickets: async () => db.tickets.findAll(),
-        ticket: async(obj,args,context,info) => db.tickets.findByPk(args.id)
-    },
-    Ticket: {
-        user: async (obj, args, context, info) => db.users.findByPk(obj.user_id),
-    }
-};
+  Query: {
+    tickets: async () => db.tickets.findAll(),
+    ticket: async (obj, args, context, info) => db.tickets.findByPk(args.id)
+  },
+  Ticket: {
+    user: async (obj, args, context, info) => db.users.findByPk(obj.user_id)
+  }
+}
