@@ -2,9 +2,6 @@
 import db from "../database";
 
 const Ticket = async ($Id) => {
-    console.log(db.tickets)
-   
-
     try {
         const res =  await db.tickets.findByPk($Id);
         return res;

@@ -20,8 +20,8 @@ app.use(cors());
 async function startServer() {
   const server = new ApolloServer({
     modules: [
-      require("./GraphQL/tickets"), 
-      require("./GraphQL/users")
+      require("./graphqL/tickets"), 
+      require("./graphqL/users")
     ],
   });
   await server.start();

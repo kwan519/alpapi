@@ -1,23 +1,19 @@
 const Sequelize = require('sequelize');
 module.exports = function(sequelize, DataTypes) {
-  return sequelize.define('status', {
+  return sequelize.define('quotes_n_bookings', {
     id: {
       autoIncrement: true,
-      type: DataTypes.INTEGER.UNSIGNED,
+      type: DataTypes.INTEGER,
       allowNull: false,
       primaryKey: true
     },
-    slug: {
-      type: DataTypes.STRING(64),
-      allowNull: false
-    },
-    name: {
-      type: DataTypes.STRING(256),
-      allowNull: false
+    quotes_n_bookingscol: {
+      type: DataTypes.STRING(45),
+      allowNull: true
     }
   }, {
     sequelize,
-    tableName: 'status',
+    tableName: 'quotes_n_bookings',
     timestamps: false,
     indexes: [
       {
