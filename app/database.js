@@ -24,7 +24,8 @@ const sequelize = new Sequelize(
 )
 
 const models = [
-  require('./models/formfills.js')
+  require('./models/formfills.js'),
+  require('./models/sites')
 ]
 
 // Initialize models
