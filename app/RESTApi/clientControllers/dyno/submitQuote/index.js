@@ -2,6 +2,30 @@ import db from '../../../../database'
 import SendEmail from '../../../utilityController/email'
 const { Op } = require('sequelize')
 
+const dynoStaffEmailTemplate = `
+<!DOCTYPE html>
+<html>
+<body>
+<h1><b>Quote Number: #{refNumber}</b></h1>
+<div>
+<h2> Customer Detail </h2>
+<p>Name: #{customerName}</p>
+<p>Email: #{customerEmail}</p>
+<p>Address: #{customerAddress}</p>
+<p>Postcode: #{customerPostcode}</p>
+<p>Phonenumber: #{customerPhonenumber}</p>
+</div>
+<div>
+<h2> Service Detail</h2>
+<p>I'd like help at: #{forSevice}</p>
+<p>With a: #{withService}</p>
+<p>To: #{toService}</p>
+<p>Franchise: #{franLabel}</p>
+</div>
+</body>
+</html>
+`
+
 const SubmitQuote = async (req, res) => {
   const formData = JSON.parse(req.body.form)
   const images = req.body.image
@@ -28,7 +52,7 @@ const SubmitQuote = async (req, res) => {
         to: req.body.q_to,
         ip: req.body.ip
       },
-      upload_pictures: images,
+      upload_pictures: JSON.stringify(images),
       detail: 'detail' in formData.input ? formData.input.detail : null,
       customer_address: 'address' in formData.input ? formData.input.address : null,
       customer_email: 'email' in formData.input ? formData.input.email : null,
@@ -43,14 +67,37 @@ const SubmitQuote = async (req, res) => {
 
     if (quote.id) {
       /** Send email to customer and Dyno */
-      const sendDyno = SendEmail(dynoEmail, ['kwan@werehumans.com', 'kwan@automatedadsa.com'], { subject: 'Testing SES' })
-      const sendCustomer = SendEmail(dynoEmail, ['kwan@werehumans.com', 'kwan@automatedadsa.com'], { subject: 'Testing SES' })
+      SendEmail({
+        sender: 'donotreply@dynodrains.com',
+        receivers: dynoEmail ? ['kwan@automatedanalytics.co.uk', dynoEmail] : 'kwan@automatedanalytics.co.uk',
+        attachments: images.map(m => ({ path: m })),
+        data: {
+          refNumber,
+          forSevice: req.body.q_for,
+          withService: req.body.q_with,
+          toService: req.body.q_to,
+          franLabel,
+          customerName: formData.input.customer_name,
+          customerEmail: formData.input.email,
+          customerAddress: formData.input.address,
+          customerPostcode: formData.input.postcode,
+          customerPhonenumber: formData.input.telephone_number
+        },
+        subject: `DYNO-ROD web Quote form from ${formData.input.email}`,
+        template: dynoStaffEmailTemplate.replaceAll('#', '$')
+      })
 
-      if (sendDyno && sendCustomer) {
-        return res.send(JSON.stringify({ code: 201, message: 'succss to create new quote', data: quote.ref_number }))
-      } else {
-        return res.send(JSON.stringify({ code: 500, message: 'unable to connect and crate a new quote' }))
-      }
+      SendEmail({
+        sender: 'donotreply@dynodrains.com',
+        receivers: formData.input.email,
+        data: {
+          refNumber,
+          baseResourceUrl
+        },
+        subject: `Dyno Quote Request Referenc: ${quote.ref_number}`
+      })
+
+      return res.send(JSON.stringify({ code: 201, message: 'succss to create new quote', data: quote.ref_number }))
     } else {
       return res.send(JSON.stringify({ code: 202, message: 'failed to create a new quote' }))
     }
