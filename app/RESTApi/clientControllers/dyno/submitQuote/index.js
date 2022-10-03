@@ -1,5 +1,7 @@
 import db from '../../../../database'
 import SendEmail from '../../../utilityController/email'
+const moment = require('moment')
+const fs = require('fs')
 const { Op } = require('sequelize')
 
 const dynoStaffEmailTemplate = `
@@ -65,8 +67,11 @@ const SubmitQuote = async (req, res) => {
       sites_id: site.id_site
     })
 
+    await quote.save()
+
     if (quote.id) {
       /** Send email to customer and Dyno */
+      console.log(quote)
       SendEmail({
         sender: 'donotreply@dynodrains.com',
         receivers: dynoEmail ? ['kwan@automatedanalytics.co.uk', dynoEmail] : 'kwan@automatedanalytics.co.uk',
@@ -102,6 +107,13 @@ const SubmitQuote = async (req, res) => {
       return res.send(JSON.stringify({ code: 202, message: 'failed to create a new quote' }))
     }
   } catch (error) {
+    fs.appendFile(
+      './log/submitquote_err_log.txt',
+    `\nsend_date: ${moment().format()}\nError:${error}\n===============>`,
+    function (err) {
+      if (err) console.log('failed to write file', err)
+    })
+
     return res.send(JSON.stringify({ code: 500, message: 'unable to connect and crate a new quote' }))
   }
 }

@@ -2,7 +2,7 @@ import '@babel/polyfill'
 import express from 'express'
 import jwt from 'jsonwebtoken'
 import dotenv from 'dotenv'
-import SubmitQuote from './RESTApi/clientControllers/dyno/submitQuote'
+import routes from './routes'
 
 const bodyParser = require('body-parser')
 // const { ApolloServer } = require('apollo-server-express')
@@ -16,13 +16,10 @@ dotenv.config()
 app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({ extended: true }))
 app.use(cors())
-// app.request.setHeader('Content-Type', 'application/json')
 
 // async function startServer () {
 //   const server = new ApolloServer({
 //     modules: [
-//       require('./graphqL/tickets'),
-//       require('./graphqL/users')
 //     ]
 //   })
 //   await server.start()
@@ -36,9 +33,13 @@ app.listen({ port: 5000 }, () =>
   console.log('🚀 Server ready at http://localhost:5000')
 )
 
-app.get('/', (req, res) => res.send('This api for Alp'))
+// a middleware function with no mount path. This code is executed for every request to the router
+// router.use((req, res, next) => {
+//   console.log('Time:', Date.now())
+//   next()
+// })
 
-app.post('/test', SubmitQuote)
+// app.post('/test', SubmitQuote)
 
 app.post('/login', (req, res) => {
   const jwtSecretKey = process.env.JWT_SECRET_KEY
@@ -51,3 +52,9 @@ app.post('/login', (req, res) => {
   const token = jwt.sign(data, jwtSecretKey)
   res.send(token)
 })
+
+app.get('/', (req, res) => {
+  res.send('This api for Alp')
+})
+
+app.use('/api', routes)
