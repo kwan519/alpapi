@@ -71,7 +71,6 @@ const SubmitQuote = async (req, res) => {
 
     if (quote.id) {
       /** Send email to customer and Dyno */
-      console.log(quote)
       SendEmail({
         sender: 'donotreply@dynodrains.com',
         receivers: dynoEmail ? ['kwan@automatedanalytics.co.uk', dynoEmail] : 'kwan@automatedanalytics.co.uk',

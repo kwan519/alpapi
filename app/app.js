@@ -30,31 +30,21 @@ app.use(cors())
 // startServer()
 
 app.listen({ port: 5000 }, () =>
-  console.log('🚀 Server ready at http://localhost:5000')
+  console.log('🚀 Server ready at http://localhost:')
 )
-
-// a middleware function with no mount path. This code is executed for every request to the router
-// router.use((req, res, next) => {
-//   console.log('Time:', Date.now())
-//   next()
-// })
-
-// app.post('/test', SubmitQuote)
 
 app.post('/login', (req, res) => {
   const jwtSecretKey = process.env.JWT_SECRET_KEY
 
+  // ** MOCK UP LOGIN
   const data = {
     time: Date(),
-    userId: 12
+    userId: 1,
+    siteId: 1
   }
 
   const token = jwt.sign(data, jwtSecretKey)
   res.send(token)
-})
-
-app.get('/', (req, res) => {
-  res.send('This api for Alp')
 })
 
 app.use('/api', routes)
