@@ -13,18 +13,20 @@ const SiteGet = async (req, res) => {
   const userId = res.locals.userId
   const avalibleSites = await AvailableSites(userId)
   const siteId = res.locals.siteId ?? req.body.siteId
-  if (avalibleSites.includes(siteId)) {
+  const siteList = avalibleSites.map(x => x.sites_id)
+
+  if (siteList.includes(siteId)) {
     const siteData = await db.sites.findByPk(siteId)
-    res.send({ siteId, data: JSON.stringify(siteData) })
+    res.send({ siteId, data: siteData })
   } else {
-    res.sendStatus(500)
+    res.sendStatus(401)
   }
 }
 
 const SiteGetAll = async (req, res) => {
   const userId = res.locals.userId
   const avalibleSites = await AvailableSites(userId)
-  res.send({ data: JSON.stringify(avalibleSites) })
+  res.send({ data: avalibleSites })
 }
 
 const SiteCreate = async (req, res) => {
@@ -55,8 +57,9 @@ const SiteUpdate = async (req, res) => {
   const userId = res.locals.userId
   const avalibleSites = await AvailableSites(userId)
   const siteId = res.locals.siteId ?? req.body.siteId
+  const siteList = avalibleSites.map(x => x.sites_id)
 
-  if (avalibleSites.includes(siteId)) {
+  if (siteList.includes(siteId)) {
     const siteData = await db.sites.update({
       site_name: req.body.siteName,
       domain_name: req.body.domainName,
@@ -67,7 +70,7 @@ const SiteUpdate = async (req, res) => {
         id_site: siteId
       }
     })
-    res.send({ siteId, data: JSON.stringify(siteData) })
+    res.send({ siteId, data: siteData })
   } else {
     res.sendStatus(401)
   }
@@ -76,9 +79,10 @@ const SiteUpdate = async (req, res) => {
 const SiteDelete = async (req, res) => {
   const userId = res.locals.userId
   const avalibleSites = await AvailableSites(userId)
-  const siteId = res.locals.siteId ?? req.body.siteId
+  const siteId = req.body.siteId
+  const siteList = avalibleSites.map(x => x.sites_id)
 
-  if (avalibleSites.includes(siteId)) {
+  if (siteList.includes(siteId)) {
     const siteData = await db.sites.update({
       status: 'deleted'
     }, {
@@ -86,7 +90,7 @@ const SiteDelete = async (req, res) => {
         id_site: siteId
       }
     })
-    res.send({ siteId, data: JSON.stringify(siteData) })
+    res.send({ siteId, data: siteData })
   } else {
     res.sendStatus(401)
   }

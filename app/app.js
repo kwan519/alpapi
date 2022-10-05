@@ -40,7 +40,7 @@ app.post('/login', (req, res) => {
   const data = {
     time: Date(),
     userId: 1,
-    siteId: 1
+    siteId: 5
   }
 
   const token = jwt.sign(data, jwtSecretKey)
