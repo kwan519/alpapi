@@ -8,9 +8,6 @@ const express = require('express')
 const router = express.Router()
 
 router.use((req, res, next) => {
-  console.log('Time: ', Date.now())
-  // check sites
-  res.locals.site_id = 2
   const header = req.header('authorization')
   if (header === undefined) res.sendStatus(402)
 
@@ -20,6 +17,7 @@ router.use((req, res, next) => {
     const token = headers[1]
     const data = jwt.decode(token)
 
+    // Check Token is stil validated
     // Token will expire after 30 days
     if (moment().isBefore(moment().date(data.time).add(30, 'days'))) {
       res.locals.siteId = data.siteId
@@ -29,6 +27,7 @@ router.use((req, res, next) => {
       res.sendStatus(401)
     }
   } else {
+    // Not allow other authenticate type
     res.sendStatus(401)
   }
 })
