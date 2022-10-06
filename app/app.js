@@ -48,7 +48,8 @@ app.post('/login', async (req, res) => {
       const jwtSecretKey = process.env.JWT_SECRET_KEY
       const data = {
         time: Date(),
-        userId: userData.id_user
+        userId: userData.id_user,
+        permission: userData.permission
       }
       const token = jwt.sign(data, jwtSecretKey)
       res.send({ status: 200, token })

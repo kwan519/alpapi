@@ -1,7 +1,7 @@
 import ImportData from '../../RESTApi/adminControllers/importData'
 import Theme from '../../RESTApi/adminControllers/theme'
 import Site from '../../RESTApi/adminControllers/site'
-import users from './superAdmin/users'
+import superAdmin from './superAdmin'
 import permission from '../../RESTApi/utilityController/permission'
 
 const express = require('express')
@@ -14,7 +14,7 @@ router.use((req, res, next) => {
   if (permission.IsAdmin(res.locals.userId) || permission.IsPublisher(res.locals.userId)) { next() } else { res.sendStatus(402) }
 })
 
-router.use('/users', users)
+router.use('/superadmin', superAdmin)
 
 // TODO : need to update route theme and sites
 router.post('/importData', upload.single('uploadFile'), ImportData)
@@ -24,7 +24,7 @@ router.post('/theme/delete', Theme.ThemeDelete)
 router.post('/theme/update', Theme.ThemeUpdate)
 
 router.get('/site', Site.SiteGet)
-router.get('/sites', Site.SiteGetAll)
+router.get('/siteAll', Site.SiteGetAll)
 router.post('/site/create', Site.SiteCreate)
 router.post('/site/delete', Site.SiteDelete)
 router.post('/site/update', Site.SiteUpdate)

@@ -18,7 +18,6 @@ const UserAll = async (req, res) => {
 }
 
 const Create = async (req, res) => {
-  console.log(req.body)
   try {
     const newUser = { ...req.body }
     bcrypt.hash(newUser.password, 10, async function (err, hash) {
@@ -49,10 +48,10 @@ const Delete = (req, res) => {
   res.sendStatus(200)
 }
 
-const Detail = (req, res) => {
+const UserGet = (req, res) => {
   res.sendStatus(200)
 }
 
-const User = { UserAll, Create, Update, Detail, Delete }
+const User = { UserAll, Create, Update, UserGet, Delete }
 
 export default User

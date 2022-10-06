@@ -20,8 +20,8 @@ router.use((req, res, next) => {
     // Check Token is stil validated
     // Token will expire after 30 days
     if (moment().isBefore(moment().date(data.time).add(30, 'days'))) {
-      res.locals.siteId = data.siteId
       res.locals.userId = data.userId
+      res.locals.permission = data.permission
       next()
     } else {
       res.sendStatus(401)
