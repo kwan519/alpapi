@@ -1,4 +1,6 @@
 import db from '../../../database'
+import permission from '../../../RESTApi/utilityController/permission'
+const { Op } = require('sequelize')
 
 const AvailableSites = async (userId) => {
   const result = await db.access_sites.findAll({
@@ -9,24 +11,39 @@ const AvailableSites = async (userId) => {
   })
   return result
 }
+
 const SiteGet = async (req, res) => {
   const userId = res.locals.userId
   const avalibleSites = await AvailableSites(userId)
+
   const siteId = res.locals.siteId ?? req.body.siteId
   const siteList = avalibleSites.map(x => x.sites_id)
 
-  if (siteList.includes(siteId)) {
+  const isAdmin = await permission.IsAdmin(res.locals.userId)
+
+  if (siteList.includes(siteId) || isAdmin) {
     const siteData = await db.sites.findByPk(siteId)
-    res.send({ siteId, data: siteData })
+    const siteSettingData = await db.site_settings.findOne({
+      where: {
+        sites_id: siteId
+      }
+    })
+    res.send({ siteId, data: siteData, setting: siteSettingData })
   } else {
     res.sendStatus(401)
   }
 }
 
 const SiteGetAll = async (req, res) => {
-  const userId = res.locals.userId
-  const avalibleSites = await AvailableSites(userId)
-  res.send({ data: avalibleSites })
+  const data = await db.sites.findAll({
+    where: {
+      status: {
+        [Op.notIn]: ['deleted']
+      }
+    }
+  })
+
+  res.send({ data })
 }
 
 const SiteCreate = async (req, res) => {
@@ -58,8 +75,8 @@ const SiteUpdate = async (req, res) => {
   const avalibleSites = await AvailableSites(userId)
   const siteId = res.locals.siteId ?? req.body.siteId
   const siteList = avalibleSites.map(x => x.sites_id)
-
-  if (siteList.includes(siteId)) {
+  const isAdmin = await permission.IsAdmin(res.locals.userId)
+  if (siteList.includes(siteId) || isAdmin) {
     const siteData = await db.sites.update({
       site_name: req.body.siteName,
       domain_name: req.body.domainName,
@@ -82,7 +99,9 @@ const SiteDelete = async (req, res) => {
   const siteId = req.body.siteId
   const siteList = avalibleSites.map(x => x.sites_id)
 
-  if (siteList.includes(siteId)) {
+  // TODO: cache permission (role)
+  const isAdmin = await permission.IsAdmin(res.locals.userId)
+  if (siteList.includes(siteId) || isAdmin) {
     const siteData = await db.sites.update({
       status: 'deleted'
     }, {

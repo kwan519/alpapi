@@ -58,3 +58,18 @@ app.post('/login', async (req, res) => {
 })
 
 app.use('/api', routes)
+
+if (process.env.ENVIORNMENT === 'production') {
+  const https = require('https')
+  const options = {
+    key: process.env.SSL_SERVER_KEY,
+    cert: process.env.SSL_SERVER_CERT
+  }
+
+  // Creating https server by passing
+  // options and app object
+  https.createServer(options, app)
+    .listen(3000, function (req, res) {
+      console.log('Server started at port 3000')
+    })
+}
