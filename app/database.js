@@ -30,7 +30,9 @@ const models = [
   require('./models/data_imports'),
   require('./models/theme'),
   require('./models/users'),
-  require('./models/access_sites')
+  require('./models/access_sites'),
+  require('./models/api_keys'),
+  require('./outsource_api_key_value')
 ]
 
 // Initialize models

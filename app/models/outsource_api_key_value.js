@@ -1,5 +1,5 @@
-const Sequelize = require('sequelize');
-module.exports = function(sequelize, DataTypes) {
+const Sequelize = require('sequelize')
+module.exports = function (sequelize, DataTypes) {
   return sequelize.define('outsource_api_key_value', {
     id: {
       autoIncrement: true,
@@ -43,23 +43,23 @@ module.exports = function(sequelize, DataTypes) {
     timestamps: false,
     indexes: [
       {
-        name: "PRIMARY",
+        name: 'PRIMARY',
         unique: true,
-        using: "BTREE",
+        using: 'BTREE',
         fields: [
-          { name: "id" },
-          { name: "api_keys_id" },
-          { name: "sites_id" },
+          { name: 'id' },
+          { name: 'api_keys_id' },
+          { name: 'sites_id' }
         ]
       },
       {
-        name: "fk_outsource_api_key_value_api_keys1_idx",
-        using: "BTREE",
+        name: 'fk_outsource_api_key_value_api_keys1_idx',
+        using: 'BTREE',
         fields: [
-          { name: "api_keys_id" },
-          { name: "sites_id" },
+          { name: 'api_keys_id' },
+          { name: 'sites_id' }
         ]
-      },
+      }
     ]
-  });
-};
+  })
+}
