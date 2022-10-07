@@ -26,6 +26,7 @@ const sequelize = new Sequelize(
 const models = [
   require('./models/formfills.js'),
   require('./models/sites'),
+  require('./models/site_settings'),
   require('./models/data_imports'),
   require('./models/theme'),
   require('./models/users'),
