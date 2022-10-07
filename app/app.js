@@ -32,7 +32,7 @@ app.use(cors())
 // startServer()
 
 app.listen({ port: 5000 }, () =>
-  console.log('🚀 Server ready at http://localhost:')
+  console.log('🚀 Server ready for Development Only')
 )
 
 app.post('/login', async (req, res) => {

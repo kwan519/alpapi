@@ -109,7 +109,14 @@ const SiteDelete = async (req, res) => {
         id_site: siteId
       }
     })
-    res.send({ siteId, data: siteData })
+
+    // delete Site Setting too
+    const siteSetting = await db.site_settings.destroy({
+      where: {
+        sites_id: siteData.id_site
+      }
+    })
+    if (siteSetting) { res.send({ siteId, data: siteData }) } else res.sendStatus(500)
   } else {
     res.sendStatus(401)
   }
