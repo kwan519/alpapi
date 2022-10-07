@@ -63,4 +63,8 @@ const Delete = async (req, res) => {
     console.log(error)
   }
 }
+
+// No function get here. All setting include this was sent by SiteSetting
+// you can go look at ./adminControllers/site/setting.js
+
 export default { Create, Update, Delete }
