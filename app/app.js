@@ -31,7 +31,7 @@ app.use(cors())
 
 // startServer()
 
-app.listen({ port: 5000 }, () =>
+app.listen({ port: 80 }, () =>
   console.log('🚀 Server ready for Development Only')
 )
 

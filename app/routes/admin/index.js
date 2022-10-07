@@ -22,8 +22,8 @@ router.use((req, res, next) => {
     const data = jwt.decode(token)
 
     // Check Token is stil validated
-    // Token will expire after 30 days
-    if (moment().isBefore(moment().date(data.time).add(30, 'days'))) {
+    // Token will expire after 1 days
+    if (moment().isBefore(moment().date(data.time).add(1, 'days'))) {
       res.locals.userId = data.userId
       res.locals.permission = data.permission
       next()

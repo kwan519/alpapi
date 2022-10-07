@@ -32,7 +32,7 @@ const models = [
   require('./models/users'),
   require('./models/access_sites'),
   require('./models/api_keys'),
-  require('./outsource_api_key_value')
+  require('./models/outsource_api_key_value')
 ]
 
 // Initialize models
