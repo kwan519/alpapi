@@ -1,5 +1,5 @@
-const Sequelize = require('sequelize')
-module.exports = function (sequelize, DataTypes) {
+const Sequelize = require('sequelize');
+module.exports = function(sequelize, DataTypes) {
   return sequelize.define('sites', {
     id_site: {
       autoIncrement: true,
@@ -20,9 +20,9 @@ module.exports = function (sequelize, DataTypes) {
       allowNull: true
     },
     status: {
-      type: DataTypes.ENUM('draft', 'public', 'suspend', 'deleted'),
+      type: DataTypes.ENUM('draft','public','suspend','deleted'),
       allowNull: true,
-      defaultValue: 'draft'
+      defaultValue: "draft"
     },
     createdate: {
       type: DataTypes.DATE,
@@ -40,21 +40,21 @@ module.exports = function (sequelize, DataTypes) {
     timestamps: false,
     indexes: [
       {
-        name: 'PRIMARY',
+        name: "PRIMARY",
         unique: true,
-        using: 'BTREE',
+        using: "BTREE",
         fields: [
-          { name: 'id_site' }
+          { name: "id_site" },
         ]
       },
       {
-        name: 'idsetting_UNIQUE',
+        name: "idsetting_UNIQUE",
         unique: true,
-        using: 'BTREE',
+        using: "BTREE",
         fields: [
-          { name: 'id_site' }
+          { name: "id_site" },
         ]
-      }
+      },
     ]
-  })
-}
+  });
+};

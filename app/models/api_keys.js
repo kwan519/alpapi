@@ -16,15 +16,11 @@ module.exports = function(sequelize, DataTypes) {
         key: 'id_site'
       }
     },
-    endpoint_url: {
+    base_url: {
       type: DataTypes.STRING(45),
       allowNull: false
     },
     source: {
-      type: DataTypes.STRING(45),
-      allowNull: false
-    },
-    keys: {
       type: DataTypes.STRING(45),
       allowNull: false
     }

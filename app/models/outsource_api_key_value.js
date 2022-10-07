@@ -1,43 +1,41 @@
 const Sequelize = require('sequelize');
 module.exports = function(sequelize, DataTypes) {
-  return sequelize.define('access_sites', {
-    id_access_sites: {
+  return sequelize.define('outsource_api_key_value', {
+    id: {
       autoIncrement: true,
       type: DataTypes.INTEGER,
       allowNull: false,
       primaryKey: true
+    },
+    key: {
+      type: DataTypes.STRING(45),
+      allowNull: false
+    },
+    value: {
+      type: DataTypes.STRING(255),
+      allowNull: false
+    },
+    api_keys_id: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      primaryKey: true,
+      references: {
+        model: 'api_keys',
+        key: 'id_api_keys'
+      }
     },
     sites_id: {
       type: DataTypes.INTEGER,
       allowNull: false,
       primaryKey: true,
       references: {
-        model: 'sites',
-        key: 'id_site'
+        model: 'api_keys',
+        key: 'sites_id'
       }
-    },
-    users_id: {
-      type: DataTypes.INTEGER,
-      allowNull: false,
-      primaryKey: true,
-      references: {
-        model: 'users',
-        key: 'id_user'
-      }
-    },
-    createdate: {
-      type: DataTypes.DATE,
-      allowNull: true,
-      defaultValue: Sequelize.Sequelize.literal('CURRENT_TIMESTAMP')
-    },
-    status: {
-      type: DataTypes.ENUM('active','suspend'),
-      allowNull: true,
-      defaultValue: "active"
     }
   }, {
     sequelize,
-    tableName: 'access_sites',
+    tableName: 'outsource_api_key_value',
     timestamps: false,
     indexes: [
       {
@@ -45,23 +43,17 @@ module.exports = function(sequelize, DataTypes) {
         unique: true,
         using: "BTREE",
         fields: [
-          { name: "id_access_sites" },
-          { name: "sites_id" },
-          { name: "users_id" },
-        ]
-      },
-      {
-        name: "fk_permission_users_sites",
-        using: "BTREE",
-        fields: [
+          { name: "id" },
+          { name: "api_keys_id" },
           { name: "sites_id" },
         ]
       },
       {
-        name: "fk_permission_users_users1",
+        name: "fk_outsource_api_key_value_api_keys1_idx",
         using: "BTREE",
         fields: [
-          { name: "users_id" },
+          { name: "api_keys_id" },
+          { name: "sites_id" },
         ]
       },
     ]

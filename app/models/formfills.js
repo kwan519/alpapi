@@ -1,5 +1,5 @@
-const Sequelize = require('sequelize')
-module.exports = function (sequelize, DataTypes) {
+const Sequelize = require('sequelize');
+module.exports = function(sequelize, DataTypes) {
   return sequelize.define('formfills', {
     id: {
       autoIncrement: true,
@@ -17,9 +17,9 @@ module.exports = function (sequelize, DataTypes) {
       }
     },
     type: {
-      type: DataTypes.ENUM('quote', 'booking'),
+      type: DataTypes.ENUM('quote','booking'),
       allowNull: false,
-      defaultValue: 'booking'
+      defaultValue: "booking"
     },
     site_question_details: {
       type: DataTypes.JSON,
@@ -81,21 +81,21 @@ module.exports = function (sequelize, DataTypes) {
     timestamps: false,
     indexes: [
       {
-        name: 'PRIMARY',
+        name: "PRIMARY",
         unique: true,
-        using: 'BTREE',
+        using: "BTREE",
         fields: [
-          { name: 'id' },
-          { name: 'sites_id' }
+          { name: "id" },
+          { name: "sites_id" },
         ]
       },
       {
-        name: 'fk_formfills_sites1',
-        using: 'BTREE',
+        name: "fk_formfills_sites1",
+        using: "BTREE",
         fields: [
-          { name: 'sites_id' }
+          { name: "sites_id" },
         ]
-      }
+      },
     ]
-  })
-}
+  });
+};

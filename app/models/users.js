@@ -12,7 +12,7 @@ module.exports = function(sequelize, DataTypes) {
       allowNull: false
     },
     password: {
-      type: DataTypes.STRING(45),
+      type: DataTypes.STRING(255),
       allowNull: false
     },
     phonenumber: {
@@ -25,12 +25,14 @@ module.exports = function(sequelize, DataTypes) {
     },
     permission: {
       type: DataTypes.ENUM('admin','member','publisher'),
-      allowNull: false
+      allowNull: false,
+      defaultValue: "member",
+      comment: "'admin' : able to do everythings,\n'publisher' : do everythings except manage user and access site\n'member': only manage site but can't publish site"
     },
     status: {
       type: DataTypes.ENUM('active','deleted','pending'),
       allowNull: true,
-      defaultValue: "pending"
+      defaultValue: "active"
     },
     createdate: {
       type: DataTypes.DATE,

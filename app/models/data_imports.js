@@ -26,7 +26,7 @@ module.exports = function(sequelize, DataTypes) {
       }
     },
     url: {
-      type: DataTypes.STRING(45),
+      type: DataTypes.STRING(255),
       allowNull: true,
       unique: "url_UNIQUE"
     },
