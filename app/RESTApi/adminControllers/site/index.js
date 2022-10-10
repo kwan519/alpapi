@@ -107,25 +107,30 @@ const SiteCreate = async (req, res) => {
 }
 
 const SiteUpdate = async (req, res) => {
-  const userId = res.locals.userId
-  const avalibleSites = await AvailableSites(userId)
-  const siteId = res.locals.siteId ?? req.body.id_site
-  const siteList = avalibleSites.map(x => x.sites_id)
-  const isAdmin = await permission.IsAdmin(res.locals.userId)
-  if (siteList.includes(siteId) || isAdmin) {
-    const siteData = await db.sites.update({
-      site_name: req.body.siteName,
-      domain_name: req.body.domainName,
-      sub_site: req.body.subSite,
-      status: req.body.status
-    }, {
-      where: {
-        id_site: siteId
-      }
-    })
-    res.send({ siteId, data: siteData })
-  } else {
-    res.sendStatus(401)
+  try {
+    const userId = res.locals.userId
+    const siteList = await AvailableSites(userId)
+    const siteId = res.locals.siteId ?? req.body.id_site
+    const isAdmin = res.locals.permission === 'admin'
+
+    if (siteList.includes(siteId) || isAdmin) {
+      const siteData = await db.sites.update({
+        site_name: req.body.siteName,
+        domain_name: req.body.domainName,
+        sub_site: req.body.subSite,
+        status: req.body.status
+      }, {
+        where: {
+          id_site: siteId
+        }
+      })
+      res.send({ status: 'success', data: { id_site: siteId, data: siteData } })
+    } else {
+      res.sendStatus(401)
+    }
+  } catch (error) {
+    WriteLogFile(LOG_FILE_NAME, `updateSite: ${error}`)
+    res.sendStatus(500)
   }
 }
 
