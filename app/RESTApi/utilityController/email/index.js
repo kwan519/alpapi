@@ -2,7 +2,6 @@ import nodemailer from 'nodemailer'
 import dotenv from 'dotenv'
 import WriteLogFile from '../../../helpers/writeLogFile'
 const _eval = require('eval')
-const moment = require('moment')
 
 dotenv.config()
 
@@ -43,10 +42,10 @@ const SendEmail = ({ sender, receivers, subject, data, attachments = null, templ
     },
     (err, info) => {
       if (err) {
-        WriteLogFile('email_sended_err_log', `send_date: ${moment().format()}\nInfo:${info}\nError:${err}\n===============>`)
+        WriteLogFile('email_sended_err_log', `send_date:\nInfo:${info}\nError:${err}\n===============>`)
         return false
       }
-      WriteLogFile('email_sended_log', `send_date: ${moment().format()}\n${info}\n===============>`)
+      WriteLogFile('email_sended_log', `send_date:\n${info}\n===============>`)
       return true
     }
   )
