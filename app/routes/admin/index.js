@@ -13,7 +13,10 @@ const router = express.Router()
 
 router.use((req, res, next) => {
   const header = req.header('authorization')
-  if (header === undefined) res.sendStatus(402)
+  if (header === undefined) {
+    res.sendStatus(401)
+    return
+  }
 
   const typeBearer = header.includes('Bearer')
   if (typeBearer) {
