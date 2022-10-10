@@ -9,15 +9,14 @@ const AvailableSites = async (userId) => {
       status: 'active'
     }
   })
-  return result
+  return result.map(x => x.dataValues.sites_id)
 }
 
 const SiteGet = async (req, res) => {
   const userId = res.locals.userId
-  const avalibleSites = await AvailableSites(userId)
+  const siteList = await AvailableSites(userId)
 
   const siteId = res.locals.siteId ?? req.body.siteId
-  const siteList = avalibleSites.map(x => x.sites_id)
 
   const isAdmin = await permission.IsAdmin(res.locals.userId)
 
@@ -35,15 +34,27 @@ const SiteGet = async (req, res) => {
 }
 
 const SiteGetAll = async (req, res) => {
-  const data = await db.sites.findAll({
-    where: {
-      status: {
-        [Op.notIn]: ['deleted']
+  console.log(res.locals)
+
+  let options = {
+    status: {
+      [Op.notIn]: ['deleted']
+    }
+  }
+  if (res.locals.permission !== 'admin') {
+    const siteAvailabelList = await AvailableSites(res.locals.userId)
+    options = {
+      ...options,
+      id_site: {
+        [Op.in]: [...siteAvailabelList]
       }
     }
+  }
+  const data = await db.sites.findAll({
+    where: { ...options }
   })
 
-  res.send({ data })
+  res.send({ status: 'success', data })
 }
 
 const SiteCreate = async (req, res) => {
@@ -73,7 +84,7 @@ const SiteCreate = async (req, res) => {
 const SiteUpdate = async (req, res) => {
   const userId = res.locals.userId
   const avalibleSites = await AvailableSites(userId)
-  const siteId = res.locals.siteId ?? req.body.siteId
+  const siteId = res.locals.siteId ?? req.body.id_site
   const siteList = avalibleSites.map(x => x.sites_id)
   const isAdmin = await permission.IsAdmin(res.locals.userId)
   if (siteList.includes(siteId) || isAdmin) {
@@ -96,7 +107,7 @@ const SiteUpdate = async (req, res) => {
 const SiteDelete = async (req, res) => {
   const userId = res.locals.userId
   const avalibleSites = await AvailableSites(userId)
-  const siteId = req.body.siteId
+  const siteId = req.body.id_site
   const siteList = avalibleSites.map(x => x.sites_id)
 
   // TODO: cache permission (role)
@@ -110,13 +121,15 @@ const SiteDelete = async (req, res) => {
       }
     })
 
+    console.log(siteData)
+
     // delete Site Setting too
     const siteSetting = await db.site_settings.destroy({
       where: {
         sites_id: siteData.id_site
       }
     })
-    if (siteSetting) { res.send({ siteId, data: siteData }) } else res.sendStatus(500)
+    if (siteSetting && siteData) { res.send({ siteId, data: siteData }) } else res.sendStatus(500)
   } else {
     res.sendStatus(401)
   }

@@ -23,4 +23,4 @@ const IsMember = async (userId) => {
   const permission = await CheckPermission(userId)
   return permission === 'member'
 }
-export default { IsAdmin, IsPublisher, IsMember }
+export default { IsAdmin, IsPublisher, IsMember, GetPermission: CheckPermission }
