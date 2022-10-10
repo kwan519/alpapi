@@ -1,6 +1,5 @@
 import db from '../../../database'
 import WriteLogFile from '../../../helpers/writeLogFile'
-import permission from '../../../RESTApi/utilityController/permission'
 const { Op } = require('sequelize')
 
 const LOG_FILE_NAME = 'site_log_error'
@@ -136,12 +135,11 @@ const SiteUpdate = async (req, res) => {
 
 const SiteDelete = async (req, res) => {
   const userId = res.locals.userId
-  const avalibleSites = await AvailableSites(userId)
+  const siteList = await AvailableSites(userId)
   const siteId = req.body.id_site
-  const siteList = avalibleSites.map(x => x.sites_id)
 
-  // TODO: cache permission (role)
-  const isAdmin = await permission.IsAdmin(res.locals.userId)
+  const isAdmin = res.locals.permission === 'admin'
+
   if (siteList.includes(siteId) || isAdmin) {
     const siteData = await db.sites.update({
       status: 'deleted'
@@ -150,9 +148,6 @@ const SiteDelete = async (req, res) => {
         id_site: siteId
       }
     })
-
-    console.log(siteData)
-
     // delete Site Setting too
     const siteSetting = await db.site_settings.destroy({
       where: {
