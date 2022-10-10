@@ -12,8 +12,9 @@ const UserAll = async (req, res) => {
         }
       }
     })
-    res.send({ data: userAll })
+    res.send({ status: 'success', data: userAll })
   } catch (error) {
+    WriteLogFile('user_log_error', `get all error: ${error}`)
     res.sendStatus(500)
   }
 }
@@ -36,41 +37,51 @@ const Create = async (req, res) => {
       }
     })
   } catch (error) {
-    console.log(error)
+    WriteLogFile('user_log_error', `create error: ${error}`)
     res.sendStatus(500)
   }
 }
 
 const Update = async (req, res) => {
   try {
+    const resultCheckExist = await db.users.findOne({ where: { id_user: req.body.id_user } })
+    if (!resultCheckExist) {
+      res.send({ status: 'failed', message: `Can't find any user to update with id ${req.body.id_user}` })
+      return
+    }
+
     const result = await db.users.update({
       phonenumber: req.body.user.phonenumber,
       email: req.body.user.email,
-      permission: req.body.user.permission,
-      status: req.body.user.status
+      permission: req.body.user.permission
+    }, {
+      where: {
+        id_user: req.body.id_user
+      }
     })
 
-    if (result.id_user) {
+    if (result) {
       res.send({
         status: 'success',
         data: {
-          id_user: result.id_user,
-          username: result.username,
-          phonenumber: result.phonenumber,
-          email: result.email,
-          permission: result.permission,
-          status: result.status
+          ...req.body
         }
       })
     }
   } catch (error) {
-    WriteLogFile('user_log_error', `error: ${error}`)
+    WriteLogFile('user_log_error', `update error: ${error}`)
     res.sendStatus(500)
   }
 }
 
 const Delete = async (req, res) => {
   try {
+    const resultCheckExist = await db.users.findOne({ where: { id_user: req.body.id_user } })
+    if (!resultCheckExist) {
+      res.send({ status: 'failed', message: `Can't find any user to delete with id ${req.body.id_user}` })
+      return
+    }
+
     const result = await db.users.update({
       status: 'deleted'
     }, {
@@ -81,7 +92,7 @@ const Delete = async (req, res) => {
 
     if (result) {
       res.send({
-        status: 'succes',
+        status: 'success',
         data: {
           id_user: req.body.id_user
         }
@@ -93,7 +104,7 @@ const Delete = async (req, res) => {
       })
     }
   } catch (error) {
-    WriteLogFile('user_log_error', `error: ${error}`)
+    WriteLogFile('user_log_error', `delete error: ${error}`)
     res.sendStatus(500)
   }
 }
@@ -110,7 +121,7 @@ const UserGet = async (req, res) => {
       res.send({
         status: 'succes',
         data: {
-          ...result
+          ...result.dataValues
         }
       })
     } else {
