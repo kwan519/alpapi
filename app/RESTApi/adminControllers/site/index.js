@@ -68,26 +68,41 @@ const SiteGetAll = async (req, res) => {
 }
 
 const SiteCreate = async (req, res) => {
-  const site = await db.sites.create({
-    site_name: req.body.siteName,
-    domain_name: req.body.domainName,
-    sub_site: req.body.subSite
-  })
+  try {
+    const site = await db.sites.create({
+      site_name: req.body.siteName,
+      domain_name: req.body.domainName,
+      sub_site: req.body.subSite
+    })
 
-  if (site.id_site) {
-    const bulkUpdateAccessSite = []
-    req.body.members.forEach(member => bulkUpdateAccessSite.push({
-      sites_id: site.id_site,
-      users_id: member
-    }))
+    if (site.id_site) {
+      const bulkUpdateAccessSite = []
+      req.body.members.forEach(member => bulkUpdateAccessSite.push({
+        sites_id: site.id_site,
+        users_id: member
+      }))
 
-    const addAvailableSite = await db.access_sites.bulkCreate(bulkUpdateAccessSite)
+      if (res.locals.permission !== 'admin') {
+        const addAvailableSite = await db.access_sites.bulkCreate(bulkUpdateAccessSite)
 
-    if (addAvailableSite) {
-      res.send({ code: 200 })
-    } else { res.send({ code: 500 }) }
-  } else {
-    res.send({ code: 500 })
+        if (addAvailableSite) {
+          res.send({
+            staus: 'success',
+            data: {
+              site,
+              addAvailableSite
+            }
+          })
+        } else { res.send({ status: 'failed', message: "Can't add access site to members" }) }
+      } else {
+        res.send({ status: 'success', data: site })
+      }
+    } else {
+      res.send({ status: 'failed', message: "Can't create new site" })
+    }
+  } catch (error) {
+    WriteLogFile(LOG_FILE_NAME, `createSite: ${error}`)
+    res.sendStatus(500)
   }
 }
 
