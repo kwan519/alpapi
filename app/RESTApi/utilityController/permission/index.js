@@ -19,4 +19,8 @@ const IsPublisher = async (userId) => {
   return permission === 'publisher'
 }
 
-export default { IsAdmin, IsPublisher }
+const IsMember = async (userId) => {
+  const permission = await CheckPermission(userId)
+  return permission === 'member'
+}
+export default { IsAdmin, IsPublisher, IsMember }
