@@ -1,4 +1,7 @@
 import db from '../../../database'
+import WriteLogFile from '../../../helpers/writeLogFile'
+
+const LOG_FILE_NAME = 'site_setting_log_error'
 
 const Create = async (req, res) => {
   try {
@@ -6,9 +9,13 @@ const Create = async (req, res) => {
       sites_id: req.body.site_id,
       ...req.body.site_settings
     })
-    if (result.id_site_settings) { res.sendStatus(200) } else { res.sendStatus(500) }
+    if (result.id_site_settings) {
+      res.send({ status: 'success', data: result.defaultValue })
+    } else {
+      res.send({ status: 'failed', message: 'Can\'t create new setting for site id' })
+    }
   } catch (error) {
-    console.log(error)
+    WriteLogFile(LOG_FILE_NAME, `createSetting: ${error}`)
     res.sendStatus(500)
   }
 }
@@ -20,10 +27,11 @@ const Update = async (req, res) => {
         sites_id: req.body.site_id
       }
     })
-    if (result) res.sendStatus(200)
-    else res.sendStatus(500)
+    if (result) {
+      res.send({ status: 'success' })
+    } else res.send({ status: 'failed', message: `Can't update site setting for site: ${req.body.site_id}` })
   } catch (error) {
-    console.log(error)
+    WriteLogFile(LOG_FILE_NAME, `updateSiteSetting: ${error}`)
     res.sendStatus(500)
   }
 }
@@ -57,11 +65,11 @@ const SiteSettingsGet = async (req, res) => {
     console.log(apiKeys)
     res.send({ status: 200, data: { settings: data, outSourceApi: apiKeys } })
   } catch (error) {
-    console.log(error)
+    WriteLogFile(LOG_FILE_NAME, `get ${req.body.site_id}: ${error} `)
     res.sendStatus(500)
   }
 }
 
-// Delete not act here. SiteSetting will automately delete when Site was deleted.
+// Delete not act here. SiteSetting will automated delete when Site was deleted. cause the relation on site and siteSetting is 1 - 1
 // Go check on /site/index.js
 export default { Create, Update, SiteSettingsGet }
