@@ -1,4 +1,7 @@
 import db from '../../../database'
+import WriteLogFile from '../../../helpers/writeLogFile'
+
+const LOG_FILE_NAME = 'out_source_api_log_error'
 
 const Create = async (req, res) => {
   try {
@@ -7,10 +10,23 @@ const Create = async (req, res) => {
     })
     const resultOutSourceKeyValue = await db.outsource_api_key_value.bulkCreate([...req.body.outSourceApi])
 
-    if (resultApi && resultOutSourceKeyValue) res.sendStatus(200)
-    else res.sendStatus(500)
+    if (resultApi && resultOutSourceKeyValue) {
+      res.send({
+        status: 'success',
+        data: {
+          apiKeys: resultApi,
+          outSourceKeys: resultOutSourceKeyValue
+        }
+      })
+    } else {
+      if (resultApi) {
+        res.send({ status: 'failed', message: "Can't create outSource keys and value " })
+      } else {
+        res.send({ status: 'failed', message: "Can't create apiKeys" })
+      }
+    }
   } catch (error) {
-    console.log(error)
+    WriteLogFile(LOG_FILE_NAME, `create: ${error}`)
     res.sendStatus(500)
   }
 }
@@ -32,13 +48,20 @@ const Update = async (req, res) => {
     if (dumpAllAssociate) {
       const resultOutSourceKeyValue = await db.outsource_api_key_value.bulkCreate([...req.body.outSourceApi])
 
-      if (resultApi && resultOutSourceKeyValue) res.sendStatus(200)
-      else res.sendStatus(500)
+      if (resultApi && resultOutSourceKeyValue) {
+        res.send({ status: 'success' })
+      } else {
+        if (resultApi) {
+          res.send({ status: 'failed', message: "Can't update outSource keys and value " })
+        } else {
+          res.send({ status: 'failed', message: "Can't update apiKeys" })
+        }
+      }
     } else {
-      res.sendStatus(500)
+      res.send({ status: 'failed', message: "Can't dump data associated on outsource table" })
     }
   } catch (error) {
-    console.log(error)
+    WriteLogFile(LOG_FILE_NAME, `update: ${error}`)
     res.sendStatus(500)
   }
 }
@@ -57,10 +80,18 @@ const Delete = async (req, res) => {
       }
     })
 
-    if (resultApi && resultOutSourceKeyValue) res.sendStatus(200)
-    else res.sendStatus(500)
+    if (resultApi && resultOutSourceKeyValue) {
+      res.send({ status: 'success' })
+    } else {
+      if (resultApi) {
+        res.send({ status: 'failed', message: "Can't delete outSource keys and value " })
+      } else {
+        res.send({ status: 'failed', message: "Can't delete apiKeys" })
+      }
+    }
   } catch (error) {
-    console.log(error)
+    WriteLogFile(LOG_FILE_NAME, `delete: ${error}`)
+    res.sendStatus(500)
   }
 }
 
