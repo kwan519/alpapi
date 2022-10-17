@@ -15,12 +15,12 @@ router.use(async (req, res, next) => {
     // Check is authen as Admin or publisher
     if (role === 'member') {
       res.sendStatus(401)
-      return
     } else {
       next()
     }
+  } else {
+    next()
   }
-  next()
 })
 
 router.get('/all', Site.SiteGetAll)

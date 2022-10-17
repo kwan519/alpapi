@@ -137,26 +137,46 @@ const SiteDelete = async (req, res) => {
   const userId = res.locals.userId
   const siteList = await AvailableSites(userId)
   const siteId = req.body.id_site
-
   const isAdmin = res.locals.permission === 'admin'
+  const isPublisher = res.locals.permission === 'publisher'
 
-  if (siteList.includes(siteId) || isAdmin) {
-    const siteData = await db.sites.update({
-      status: 'deleted'
-    }, {
-      where: {
-        id_site: siteId
+  if (siteId === undefined) {
+    res.send({ status: 'failed', message: 'Missing Params id_site' })
+    return
+  }
+
+  try {
+    if ((siteList.includes(siteId) && isPublisher) || isAdmin) {
+      const siteData = await db.sites.update({
+        status: 'deleted'
+      }, {
+        where: {
+          id_site: siteId
+        }
+      })
+
+      if (siteData) {
+        // delete Site Setting too
+        const siteSetting = await db.site_settings.destroy({
+          where: {
+            sites_id: siteId
+          }
+        })
+        if (siteSetting) {
+          res.send({ status: 'success', data: siteData })
+        } else {
+          res.send({ status: 'failed', message: 'Absolute delete site failed' })
+        }
+      } else {
+        console.log('failed delete site')
+        res.send({ status: 'failed', message: `Can't delete site ${siteId}` })
       }
-    })
-    // delete Site Setting too
-    const siteSetting = await db.site_settings.destroy({
-      where: {
-        sites_id: siteData.id_site
-      }
-    })
-    if (siteSetting && siteData) { res.send({ siteId, data: siteData }) } else res.sendStatus(500)
-  } else {
-    res.sendStatus(401)
+    } else {
+      res.sendStatus(401)
+    }
+  } catch (error) {
+    WriteLogFile(LOG_FILE_NAME, `deleteSite: ${error}`)
+    res.sendStatus(500)
   }
 }
 
