@@ -1,5 +1,5 @@
-import db from '../../../database'
-import WriteLogFile from '../../../helpers/writeLogFile'
+import db from '../../../../database'
+import WriteLogFile from '../../../../helpers/writeLogFile'
 
 const LOG_FILE_NAME = 'out_source_api_log_error'
 
@@ -35,7 +35,7 @@ const Update = async (req, res) => {
   try {
     const resultApi = await db.api_keys.update({ ...req.body.api_keys }, {
       where: {
-        id_api_keys: req.body.site_id
+        id_api_keys: req.body.id_site
 
       }
     })

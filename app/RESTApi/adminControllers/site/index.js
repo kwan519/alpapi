@@ -1,5 +1,6 @@
 import db from '../../../database'
 import WriteLogFile from '../../../helpers/writeLogFile'
+
 const { Op } = require('sequelize')
 
 const LOG_FILE_NAME = 'site_log_error'
@@ -113,17 +114,17 @@ const SiteUpdate = async (req, res) => {
     const isAdmin = res.locals.permission === 'admin'
 
     if (siteList.includes(siteId) || isAdmin) {
-      const siteData = await db.sites.update({
-        site_name: req.body.siteName,
-        domain_name: req.body.domainName,
-        sub_site: req.body.subSite,
-        status: req.body.status
-      }, {
+      const siteData = await db.sites.update({ ...req.body }, {
         where: {
           id_site: siteId
         }
       })
-      res.send({ status: 'success', data: { id_site: siteId, data: siteData } })
+      if (siteData) {
+        const site = await db.sites.findByPk(req.body.id_site)
+        res.send({ status: 'success', data: { id_site: siteId, data: site } })
+      } else {
+        res.send({ status: 'failed', message: `Can't update site: ${req.body.id_site}` })
+      }
     } else {
       res.sendStatus(401)
     }
@@ -165,7 +166,7 @@ const SiteDelete = async (req, res) => {
         if (siteSetting) {
           res.send({ status: 'success', data: siteData })
         } else {
-          res.send({ status: 'failed', message: 'Absolute delete site failed' })
+          res.send({ status: 'success', message: 'Absolute delete site not complete. Site setting is not created yet' })
         }
       } else {
         console.log('failed delete site')

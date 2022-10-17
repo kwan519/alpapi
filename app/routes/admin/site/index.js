@@ -29,9 +29,9 @@ router.post('/create', Site.SiteCreate)
 router.post('/delete', Site.SiteDelete)
 router.post('/update', Site.SiteUpdate)
 
-router.post('/settings/create', setting.Create)
-router.post('/settings/update', setting.Update)
-router.get('/settings', setting.SiteSettingsGet)
+router.post('/setting/create', setting.Create)
+router.post('/setting/update', setting.Update)
+router.get('/setting', setting.SiteSettingsGet)
 
 router.post('/setting/apiOutsource/create', outSourceApi.Create)
 router.post('/setting/apiOutsource/update', outSourceApi.Update)

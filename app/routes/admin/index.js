@@ -1,7 +1,7 @@
 import ImportData from '../../RESTApi/adminControllers/importData'
 import Theme from '../../RESTApi/adminControllers/theme'
 import superAdmin from './superAdmin'
-import sites from './sites'
+import sites from './site'
 import jwt from 'jsonwebtoken'
 import moment from 'moment'
 
