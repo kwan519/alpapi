@@ -5,6 +5,7 @@ var _block_components = require("./block_components");
 var _crm_call365 = require("./crm_call365");
 var _data_imports = require("./data_imports");
 var _formfills = require("./formfills");
+var _images = require("./images");
 var _ms_language = require("./ms_language");
 var _outsource_api_key_value = require("./outsource_api_key_value");
 var _page_types = require("./page_types");
@@ -22,6 +23,7 @@ function initModels(sequelize) {
   var crm_call365 = _crm_call365(sequelize, DataTypes);
   var data_imports = _data_imports(sequelize, DataTypes);
   var formfills = _formfills(sequelize, DataTypes);
+  var images = _images(sequelize, DataTypes);
   var ms_language = _ms_language(sequelize, DataTypes);
   var outsource_api_key_value = _outsource_api_key_value(sequelize, DataTypes);
   var page_types = _page_types(sequelize, DataTypes);
@@ -88,6 +90,7 @@ function initModels(sequelize) {
     crm_call365,
     data_imports,
     formfills,
+    images,
     ms_language,
     outsource_api_key_value,
     page_types,

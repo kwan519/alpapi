@@ -16,6 +16,10 @@ module.exports = function(sequelize, DataTypes) {
         key: 'id_site'
       }
     },
+    theme_name: {
+      type: DataTypes.STRING(45),
+      allowNull: false
+    },
     external_css: {
       type: DataTypes.STRING(45),
       allowNull: true,
@@ -63,7 +67,7 @@ module.exports = function(sequelize, DataTypes) {
         ]
       },
       {
-        name: "fk_theme_sites1",
+        name: "fk_theme_sites1_idx",
         using: "BTREE",
         fields: [
           { name: "sites_id" },

@@ -48,6 +48,6 @@ router.post('/importData', upload.single('uploadFile'), ImportData)
 
 router.use('/theme', theme)
 router.use('/templateLayout', templateLayout)
-router.user('/pageType', pageType)
+router.use('/pageType', pageType)
 
 export default router
