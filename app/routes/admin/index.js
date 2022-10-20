@@ -43,9 +43,6 @@ router.use('/superadmin', superAdmin)
 router.use('/site', sites)
 router.post('/importData', upload.single('uploadFile'), ImportData)
 
-router.get('/themes', Theme.ThemeGet)
-router.post('/theme/create', Theme.ThemeCreate)
-router.post('/theme/delete', Theme.ThemeDelete)
-router.post('/theme/update', Theme.ThemeUpdate)
+
 
 export default router

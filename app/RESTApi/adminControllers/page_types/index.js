@@ -72,7 +72,7 @@ const Get = async (req, res) => {
 const GetAll = async (req, res) => {
   try {
     const siteId = req.body.id_site
-    const pageTypes = await db.page_types.find({
+    const pageTypes = await db.page_types.findAll({
       where: {
         site_id: siteId
       }

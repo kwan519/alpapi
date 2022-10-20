@@ -48,7 +48,7 @@ const Update = async (req, res) => {
 const Delete = async (req, res) => {
   try {
     const templateId = req.body.id_template
-    const template = await db.theme.destroy({
+    const template = await db.templates_layout.destroy({
       where: {
         id_theme: templateId
       }
@@ -68,7 +68,7 @@ const Delete = async (req, res) => {
 const Get = async (req, res) => {
   try {
     const templateId = req.body.id_template
-    const template = await db.theme.findByPk(templateId)
+    const template = await db.templates_layout.findByPk(templateId)
     res.send({ status: 'failed', data: template })
   } catch (error) {
     WriteLogFile(LOG_FILE_NAME, `getTemplatesLayout: ${error}`)
@@ -76,4 +76,14 @@ const Get = async (req, res) => {
   }
 }
 
-export default { Create, Update, Delete, Get }
+const GetAll = async (req, res) => {
+  try {
+    const siteId = req.body.id_site
+    const themeUpdated = await db.templates_layout.findAll({ where: { sites_id: siteId } })
+    res.send({ status: 'failed', data: themeUpdated })
+  } catch (error) {
+    WriteLogFile(LOG_FILE_NAME, `getAllTemplatesLayout: ${error}`)
+    res.sendStatus(500)
+  }
+}
+export default { Create, Update, Delete, Get, GetAll }

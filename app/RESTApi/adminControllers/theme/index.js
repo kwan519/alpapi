@@ -2,7 +2,7 @@ import db from '../../../database'
 import WriteLogFile from '../../../helpers/writeLogFile'
 
 const LOG_FILE_NAME = 'theme_log_error'
-const ThemeCreate = async (req, res) => {
+const Create = async (req, res) => {
   try {
     const siteId = req.body.id_site
     const result = await db.Theme.create({
@@ -20,7 +20,7 @@ const ThemeCreate = async (req, res) => {
   }
 }
 
-const ThemeUpdate = async (req, res) => {
+const Update = async (req, res) => {
   try {
     const siteId = req.body.id_site
     const themeId = req.body.id_theme
@@ -41,7 +41,7 @@ const ThemeUpdate = async (req, res) => {
     res.sendStatus(500)
   }
 }
-const ThemeDelete = async (req, res) => {
+const Delete = async (req, res) => {
   try {
     const themeId = req.body.id_theme
     const theme = await db.theme.destroy({
@@ -61,7 +61,7 @@ const ThemeDelete = async (req, res) => {
   }
 }
 
-const ThemeGet = async (req, res) => {
+const Get = async (req, res) => {
   try {
     const themeId = req.body.id_theme
     const themeUpdated = await db.theme.findByPk(themeId)
@@ -72,5 +72,16 @@ const ThemeGet = async (req, res) => {
   }
 }
 
-const Theme = { ThemeCreate, ThemeUpdate, ThemeDelete, ThemeGet }
+const GetAll = async (req, res) => {
+  try {
+    const siteId = req.body.id_site
+    const themeUpdated = await db.theme.findAll({ where: { sites_id: siteId } })
+    res.send({ status: 'failed', data: themeUpdated })
+  } catch (error) {
+    WriteLogFile(LOG_FILE_NAME, `getAllTheme: ${error}`)
+    res.sendStatus(500)
+  }
+}
+
+const Theme = { Create, Update, Delete, Get, GetAll }
 export default Theme
