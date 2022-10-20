@@ -1,4 +1,4 @@
-import theme from '../../../RESTApi/adminControllers/theme'
+import pageType from '../../../RESTApi/adminControllers/pageType'
 import permission from '../../../RESTApi/utilityController/permission'
 
 const express = require('express')
@@ -21,10 +21,10 @@ router.use(async (req, res, next) => {
   }
 })
 
-router.get('/all', theme.GetAll)
-router.get('/', theme.Get)
-router.post('/create', theme.Create)
-router.post('/delete', theme.Delete)
-router.post('/update', theme.Update)
+router.get('/all', pageType.GetAll)
+router.get('/', pageType.Get)
+router.post('/create', pageType.Create)
+router.post('/delete', pageType.Delete)
+router.post('/update', pageType.Update)
 
 export default router

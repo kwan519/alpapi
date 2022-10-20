@@ -1,7 +1,10 @@
 import ImportData from '../../RESTApi/adminControllers/importData'
-import Theme from '../../RESTApi/adminControllers/theme'
 import superAdmin from './superAdmin'
 import sites from './site'
+import theme from './theme'
+import templateLayout from './templateLayout'
+import pageType from './pageType'
+
 import jwt from 'jsonwebtoken'
 import moment from 'moment'
 
@@ -43,6 +46,8 @@ router.use('/superadmin', superAdmin)
 router.use('/site', sites)
 router.post('/importData', upload.single('uploadFile'), ImportData)
 
-
+router.use('/theme', theme)
+router.use('/templateLayout', templateLayout)
+router.user('/pageType', pageType)
 
 export default router
