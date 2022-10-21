@@ -24,6 +24,15 @@ module.exports = function(sequelize, DataTypes) {
       type: DataTypes.DATE,
       allowNull: true,
       defaultValue: Sequelize.Sequelize.literal('CURRENT_TIMESTAMP')
+    },
+    sites_id: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      primaryKey: true,
+      references: {
+        model: 'sites',
+        key: 'id_site'
+      }
     }
   }, {
     sequelize,
@@ -36,6 +45,14 @@ module.exports = function(sequelize, DataTypes) {
         using: "BTREE",
         fields: [
           { name: "id_image" },
+          { name: "sites_id" },
+        ]
+      },
+      {
+        name: "fk_images_sites1_idx",
+        using: "BTREE",
+        fields: [
+          { name: "sites_id" },
         ]
       },
     ]

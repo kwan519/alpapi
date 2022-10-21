@@ -62,14 +62,16 @@ function initModels(sequelize) {
   sites.hasMany(data_imports, { as: "data_imports", foreignKey: "sites_id"});
   formfills.belongsTo(sites, { as: "site", foreignKey: "sites_id"});
   sites.hasMany(formfills, { as: "formfills", foreignKey: "sites_id"});
+  images.belongsTo(sites, { as: "site", foreignKey: "sites_id"});
+  sites.hasMany(images, { as: "images", foreignKey: "sites_id"});
   site_settings.belongsTo(sites, { as: "site", foreignKey: "sites_id"});
   sites.hasMany(site_settings, { as: "site_settings", foreignKey: "sites_id"});
   templates_layout.belongsTo(sites, { as: "site", foreignKey: "sites_id"});
   sites.hasMany(templates_layout, { as: "templates_layouts", foreignKey: "sites_id"});
   theme.belongsTo(sites, { as: "site", foreignKey: "sites_id"});
   sites.hasMany(theme, { as: "themes", foreignKey: "sites_id"});
-  tokens.belongsTo(sites, { as: "sites_id_site_site", foreignKey: "sites_id_site"});
-  sites.hasMany(tokens, { as: "tokens", foreignKey: "sites_id_site"});
+  tokens.belongsTo(sites, { as: "site", foreignKey: "sites_id"});
+  sites.hasMany(tokens, { as: "tokens", foreignKey: "sites_id"});
   page_types.belongsTo(templates_layout, { as: "template_layout", foreignKey: "template_layout_id"});
   templates_layout.hasMany(page_types, { as: "page_types", foreignKey: "template_layout_id"});
   page_types.belongsTo(templates_layout, { as: "site", foreignKey: "site_id"});

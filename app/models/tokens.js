@@ -32,7 +32,7 @@ module.exports = function(sequelize, DataTypes) {
       allowNull: true,
       defaultValue: Sequelize.Sequelize.literal('CURRENT_TIMESTAMP')
     },
-    sites_id_site: {
+    sites_id: {
       type: DataTypes.INTEGER,
       allowNull: false,
       primaryKey: true,
@@ -52,7 +52,7 @@ module.exports = function(sequelize, DataTypes) {
         using: "BTREE",
         fields: [
           { name: "id_tokens" },
-          { name: "sites_id_site" },
+          { name: "sites_id" },
         ]
       },
       {
@@ -72,10 +72,10 @@ module.exports = function(sequelize, DataTypes) {
         ]
       },
       {
-        name: "fk_tokens_sites1",
+        name: "fk_tokens_sites1_idx",
         using: "BTREE",
         fields: [
-          { name: "sites_id_site" },
+          { name: "sites_id" },
         ]
       },
     ]
