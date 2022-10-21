@@ -33,7 +33,7 @@ module.exports = function(sequelize, DataTypes) {
       type: DataTypes.STRING(45),
       allowNull: true
     },
-    custom_url: {
+    custom_prefix_url: {
       type: DataTypes.STRING(45),
       allowNull: true,
       comment: "if have this value will put it infront of the url from data_import table"
@@ -48,16 +48,7 @@ module.exports = function(sequelize, DataTypes) {
       allowNull: true,
       defaultValue: Sequelize.Sequelize.literal('CURRENT_TIMESTAMP')
     },
-    custom_header: {
-      type: DataTypes.TEXT,
-      allowNull: true,
-      comment: "absolute replace from core theme and layout "
-    },
     custom_body: {
-      type: DataTypes.TEXT,
-      allowNull: true
-    },
-    custom_footer: {
       type: DataTypes.TEXT,
       allowNull: true
     },
@@ -90,7 +81,7 @@ module.exports = function(sequelize, DataTypes) {
         ]
       },
       {
-        name: "fk_page_types_templates_layout1",
+        name: "fk_page_types_templates_layout1_idx",
         using: "BTREE",
         fields: [
           { name: "template_layout_id" },
