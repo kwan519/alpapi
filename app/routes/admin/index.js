@@ -4,6 +4,7 @@ import sites from './site'
 import theme from './theme'
 import templateLayout from './templateLayout'
 import pageType from './pageType'
+import generate from './generate'
 
 import jwt from 'jsonwebtoken'
 import moment from 'moment'
@@ -50,4 +51,5 @@ router.use('/theme', theme)
 router.use('/templateLayout', templateLayout)
 router.use('/pageType', pageType)
 
+router.use('/generate', generate)
 export default router
