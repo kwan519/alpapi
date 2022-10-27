@@ -35,7 +35,8 @@ const models = [
   require('./models/outsource_api_key_value'),
   require('./models/templates_layout'),
   require('./models/page_types'),
-  require('./models/images')
+  require('./models/images'),
+  require('./models/ms_language')
 ]
 
 // Initialize models
