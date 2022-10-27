@@ -13,7 +13,8 @@ module.exports = function(sequelize, DataTypes) {
     },
     token_name: {
       type: DataTypes.STRING(45),
-      allowNull: false
+      allowNull: false,
+      comment: "template for token = image_${site_id_4_digits}_${custome_by_user}"
     },
     createdate: {
       type: DataTypes.DATE,

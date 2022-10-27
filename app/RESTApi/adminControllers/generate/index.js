@@ -1,8 +1,11 @@
 /* eslint-disable no-useless-escape */
 import db from '../../../database'
 import { Op } from 'sequelize'
+import NodeCache from 'node-cache'
 
 const _eval = require('eval')
+
+const cache = new NodeCache({ stdTTL: 600 }) // live for 600 sec
 
 const convertTemplate = (template, data) => {
   const keys = Object.keys(data)
@@ -27,6 +30,14 @@ const extractToken = (template, siteId, imageTokenList = [], dataTokenList = [])
     imageTokenList: _imageTokenList,
     dataTokenList: _dataTokenList
   }
+}
+
+const loadFromCache = (key) => {
+  return cache.get(key)
+}
+
+const writeCache = (key, values) => {
+  cache.set(key, values, 600)
 }
 
 const loadImageData = async (imageTokenList = []) => {
@@ -55,17 +66,23 @@ const loadBaseData = async (importDataId, siteId, pageTypeId) => {
     : null
 
   // get page_types ( HTML -body)
-  const { dataValues: pageType } = await db.page_types.findOne({
+  const cachePageType = loadFromCache(`page_types_${pageTypeId}`)
+  const { dataValues: pageType } = cachePageType ?? await db.page_types.findOne({
     where: {
       id_page_types: pageTypeId
     }
   })
+  if (cachePageType === null) writeCache(`page_types_${pageTypeId}`, pageType)
+
   // get layout (HTML - head and footer)
-  const { dataValues: layout } = await db.templates_layout.findOne({
+  const cacheLayout = loadFromCache(`cache_types_${pageType.template_layout_id}`)
+  const { dataValues: layout } = cacheLayout ?? await db.templates_layout.findOne({
     where: {
       id_template: pageType.template_layout_id
     }
   })
+  if (cacheLayout === null) writeCache(`cache_types_${pageType.template_layout_id}`, layout)
+
   // get theme (css)
   const { dataValues: theme } = await db.theme.findOne({
     where: {
@@ -99,7 +116,6 @@ const GenerateSingleHtmlPage = async (importDataId, siteId, pageTypeId, siteData
 
   // 4. Load imageDataUrls from Database by imageTokenList
   const imageDataUrls = tokenList.imageTokenList.length > 0 ? await loadImageData(tokenList.imageTokenList) : []
-  console.log(imageDataUrls)
 
   // 5. Merge Data
   let data = siteData ? { ...siteData } : {}
@@ -140,14 +156,14 @@ const GenerateSingleHtmlPage = async (importDataId, siteId, pageTypeId, siteData
   return convertTemplate(template, data)
 }
 
-// TODO: Generate page
 const GeneratePage = async (req, res) => {
   const importDataId = req.params.id_import_data
   const siteId = req.params.id_site
   const pageTypeId = req.params.id_page_type
 
   const page = await GenerateSingleHtmlPage(importDataId, siteId, pageTypeId)
-  res.send(page.html.replace('\n', ''))
+  res.writeHead(200, { 'Content-Type': 'text/html' })
+  res.end(page.html.replace('\n', ''))
 }
 
 // TODO: Generate Site infrastructure
@@ -163,6 +179,9 @@ const GeneratePage = async (req, res) => {
  */
 
 // TODO: Generate Site Pages
+const GenerateSite = async (req, res) => {
+
+}
 
 // TODO: Upload Site [node cmd]
 

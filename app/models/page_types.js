@@ -1,5 +1,5 @@
-const Sequelize = require('sequelize');
-module.exports = function(sequelize, DataTypes) {
+const Sequelize = require('sequelize')
+module.exports = function (sequelize, DataTypes) {
   return sequelize.define('page_types', {
     id_page_types: {
       autoIncrement: true,
@@ -36,7 +36,7 @@ module.exports = function(sequelize, DataTypes) {
     custom_prefix_url: {
       type: DataTypes.STRING(45),
       allowNull: true,
-      comment: "if have this value will put it infront of the url from data_import table"
+      comment: 'if have this value will put it infront of the url from data_import table'
     },
     createdate: {
       type: DataTypes.DATE,
@@ -60,10 +60,15 @@ module.exports = function(sequelize, DataTypes) {
       type: DataTypes.TEXT,
       allowNull: true
     },
-    inherit: {
+    is_static: {
       type: DataTypes.TINYINT,
       allowNull: true,
       defaultValue: 1
+    },
+    status: {
+      type: DataTypes.ENUM('draft', 'active'),
+      allowNull: true,
+      defaultValue: 'draft'
     }
   }, {
     sequelize,
@@ -71,23 +76,23 @@ module.exports = function(sequelize, DataTypes) {
     timestamps: false,
     indexes: [
       {
-        name: "PRIMARY",
+        name: 'PRIMARY',
         unique: true,
-        using: "BTREE",
+        using: 'BTREE',
         fields: [
-          { name: "id_page_types" },
-          { name: "template_layout_id" },
-          { name: "site_id" },
+          { name: 'id_page_types' },
+          { name: 'template_layout_id' },
+          { name: 'site_id' }
         ]
       },
       {
-        name: "fk_page_types_templates_layout1_idx",
-        using: "BTREE",
+        name: 'fk_page_types_templates_layout1_idx',
+        using: 'BTREE',
         fields: [
-          { name: "template_layout_id" },
-          { name: "site_id" },
+          { name: 'template_layout_id' },
+          { name: 'site_id' }
         ]
-      },
+      }
     ]
-  });
-};
+  })
+}
