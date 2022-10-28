@@ -9,12 +9,12 @@ const cache = new NodeCache({ stdTTL: 600 }) // live for 600 sec
 
 const convertTemplate = (template, data) => {
   const keys = Object.keys(data)
-  const varTemp = `${keys.map(x => `${x} = "${data[x]}" `)};`
-  const pattern = `${varTemp} exports.html = \`${template}\``
+  const varTemp = keys.map(x => `${x} = \`${data[x]}\` `)
+  const pattern = `${[...varTemp]}; exports.html = \`${template}\``
   return _eval(pattern)
 }
 
-const extractToken = (template, siteId, imageTokenList = [], dataTokenList = []) => {
+const extractToken = (siteId, template, imageTokenList = [], dataTokenList = []) => {
   const regex = /(\$\{\w{1,45}\})/g // match `${ANY_WORD}`
   const tokenList = template.match(regex) // return string[]: ['${token_name_1}', '${token_name_2}']
     ?.map(x => x.replace(/[\$\{\}]/g, '')) // remove ${}
@@ -23,9 +23,12 @@ const extractToken = (template, siteId, imageTokenList = [], dataTokenList = [])
   const _imageTokenList = imageTokenList
   const _dataTokenList = dataTokenList
   tokenList?.forEach(token => {
-    if (token.startsWith(`image_${siteId}`)) { !_imageTokenList.find(x => x === token) && _imageTokenList.push(token) } else { !_dataTokenList.find(x => x === token) && _dataTokenList.push(token) }
+    if (token.startsWith(`image_${siteId}`)) {
+      !_imageTokenList.find(x => x === token) && _imageTokenList.push(token)
+    } else {
+      !_dataTokenList.find(x => x === token) && _dataTokenList.push(token)
+    }
   })
-
   return {
     imageTokenList: _imageTokenList,
     dataTokenList: _dataTokenList
@@ -33,7 +36,7 @@ const extractToken = (template, siteId, imageTokenList = [], dataTokenList = [])
 }
 
 const loadFromCache = (key) => {
-  return cache.get(key)
+  return { dataValues: cache.get(key) }
 }
 
 const writeCache = (key, values) => {
@@ -54,9 +57,9 @@ const loadImageData = async (imageTokenList = []) => {
   }
 }
 
-const loadBaseData = async (importDataId, siteId, pageTypeId) => {
+const loadBaseData = async (importDataId, siteId, pageTypeId, usingCache) => {
   // It is possible some page no need to get pageData if importData = null set pageData = {}
-  const pageData = importDataId !== null
+  const { dataValues: { value_json: pageData } } = importDataId !== null
     ? await db.data_imports.findOne({
       where: {
         sites_id: siteId,
@@ -66,29 +69,38 @@ const loadBaseData = async (importDataId, siteId, pageTypeId) => {
     : null
 
   // get page_types ( HTML -body)
-  const cachePageType = loadFromCache(`page_types_${pageTypeId}`)
-  const { dataValues: pageType } = cachePageType ?? await db.page_types.findOne({
-    where: {
-      id_page_types: pageTypeId
-    }
-  })
-  if (cachePageType === null) writeCache(`page_types_${pageTypeId}`, pageType)
+  const cachePageType = usingCache ? loadFromCache(`page_types_${pageTypeId}`) : {}
+  const { dataValues: pageType } = cachePageType.dataValues
+    ? cachePageType
+    : await db.page_types.findOne({
+      where: {
+        id_page_types: pageTypeId
+      }
+    })
+
+  if (!cachePageType.dataValues && usingCache) writeCache(`page_types_${pageTypeId}`, pageType)
 
   // get layout (HTML - head and footer)
-  const cacheLayout = loadFromCache(`cache_types_${pageType.template_layout_id}`)
-  const { dataValues: layout } = cacheLayout ?? await db.templates_layout.findOne({
-    where: {
-      id_template: pageType.template_layout_id
-    }
-  })
-  if (cacheLayout === null) writeCache(`cache_types_${pageType.template_layout_id}`, layout)
+  const cacheLayout = usingCache ? loadFromCache(`templates_layout_${pageType.template_layout_id}`) : {}
+  const { dataValues: layout } = cacheLayout.dataValues
+    ? cacheLayout
+    : await db.templates_layout.findOne({
+      where: {
+        id_template: pageType.template_layout_id
+      }
+    })
+  if (!cacheLayout.dataValues && usingCache) writeCache(`templates_layout_${pageType.template_layout_id}`, layout)
 
   // get theme (css)
-  const { dataValues: theme } = await db.theme.findOne({
-    where: {
-      id_theme: layout.theme_id
-    }
-  })
+  const cacheTheme = usingCache ? loadFromCache(`theme_${layout.theme_id}`) : {}
+  const { dataValues: theme } = cacheTheme.dataValues
+    ? cacheTheme
+    : await db.theme.findOne({
+      where: {
+        id_theme: layout.theme_id
+      }
+    })
+  if (!cacheTheme.dataValues && usingCache) writeCache(`theme_${layout.theme_id}`, theme)
 
   return {
     pageData,
@@ -101,18 +113,18 @@ const loadBaseData = async (importDataId, siteId, pageTypeId) => {
 /**
  * siteData : for repeative site data such as site title , url , some tag
  */
-const GenerateSingleHtmlPage = async (importDataId, siteId, pageTypeId, siteData = null) => {
+const GenerateSingleHtmlPage = async (importDataId, siteId, pageTypeId, siteData = null, usingCache = true) => {
   // 1. Check must provide data are siteId, pageTypeId
   if (siteId == null || pageTypeId == null) return false
 
   // 2. Load base data for Html, Css, Js From Theme, Layout and PageType and ImportData from Database
-  const { theme, layout, pageType, pageData } = await loadBaseData(importDataId, siteId, pageTypeId)
+  const { theme, layout, pageType, pageData } = await loadBaseData(importDataId, siteId, pageTypeId, usingCache)
 
   // 3. Extract Token from baseData
   let tokenList = { imageTokenList: [], dataTokenList: [] }
-  tokenList = extractToken(`${theme.external_css} ${theme.external_js} ${theme.internal_css} ${theme.internal_js}`, tokenList.imageTokenList, tokenList.dataTokenList)
-  tokenList = extractToken(`${layout.header} ${layout.footer}`, tokenList.imageTokenList, tokenList.dataTokenList)
-  tokenList = extractToken(`${pageType.custom_css} ${pageType.custom_js} ${pageType.custom_body}`, tokenList.imageTokenList, tokenList.dataTokenList)
+  tokenList = extractToken(siteId, `${theme.external_css} ${theme.external_js} ${theme.internal_css} ${theme.internal_js}`, tokenList.imageTokenList, tokenList.dataTokenList)
+  tokenList = extractToken(siteId, `${layout.header} ${layout.footer}`, tokenList.imageTokenList, tokenList.dataTokenList)
+  tokenList = extractToken(siteId, `${pageType.custom_css} ${pageType.custom_js} ${pageType.custom_body}`, tokenList.imageTokenList, tokenList.dataTokenList)
 
   // 4. Load imageDataUrls from Database by imageTokenList
   const imageDataUrls = tokenList.imageTokenList.length > 0 ? await loadImageData(tokenList.imageTokenList) : []
@@ -120,7 +132,7 @@ const GenerateSingleHtmlPage = async (importDataId, siteId, pageTypeId, siteData
   // 5. Merge Data
   let data = siteData ? { ...siteData } : {}
   tokenList.dataTokenList.forEach(token => {
-    if (token in pageData.value_json) { data = { ...data, [token]: pageData.value_json[token] } } else {
+    if (token in pageData) { data = { ...data, [token]: pageData[token] } } else {
       data = { ...data, [token]: 'missing token' }
     }
   })
@@ -135,21 +147,21 @@ const GenerateSingleHtmlPage = async (importDataId, siteId, pageTypeId, siteData
   const template = `<!DOCTYPE html>
                     <html>
                     <header>
-                        ${theme.external_css} 
-                        ${theme.external_js} 
-                        ${theme.internal_css} 
-                        ${theme.internal_js}
+                        ${theme.external_css !== null ? theme.external_css : ''}  
+                        ${theme.external_js !== null ? theme.external_js : ''}  
                     <style>
-                        ${pageType.custom_css}
+                        ${theme.internal_css !== null ? theme.internal_css : ''}
+                        ${pageType.custom_css !== null ? pageType.custom_css : ''}
                     </style>
                     <script>
-                        ${pageType.custom_js}
+                        ${theme.internal_js !== null ? theme.internal_js : ''}
+                        ${pageType.custom_js !== null ? pageType.custom_js : ''}
                     </script>
                     </header> 
                     <body>
-                    ${layout.header} 
-                    ${pageType.custom_body} 
-                    ${layout.footer}
+                        ${layout.header !== null ? layout.header : ''}
+                        ${pageType.custom_body !== null ? pageType.custom_body : ''}
+                        ${layout.footer !== null ? layout.footer : ''}
                     </body>
                     </html>`
 
